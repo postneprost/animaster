@@ -109,9 +109,10 @@ function animaster() {
 
         heartBeating: function(element) {
 
-            let timerId = setTimeout(function step() {
+            let timer = setTimeout(function step() {
                 element.style.transitionDuration = '500ms';
-                element.style.transform = 'scale(1.4, 1.4)';              setTimeout(() => {
+                element.style.transform = 'scale(1.4, 1.4)';
+                setTimeout(() => {
                     element.style.transitionDuration = '500ms';
                     element.style.transform = 'scale(1, 1)';
                 }, 500);
@@ -120,7 +121,7 @@ function animaster() {
 
             let obj = {
                 stop: function() {
-                    clearTimeout(timerId);
+                    clearTimeout(timer);
                 }
             }
             return obj;
