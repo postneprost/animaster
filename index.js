@@ -24,14 +24,11 @@ function addListeners() {
         .addEventListener('click', function () {
             const block = document.getElementById('fadeOutBlock');
             animaster()
-            .addMove(1000, {x: 400, y: 40})
-            .addScale(2000, 2)
-            .addMove(3000, {x: 80, y: 0})
-            .addScale(4000, 1)
-            .addMove(5000, {x: 40, y: -40})
-            .addScale(6000, 0.7)
-            .addMove(7000, {x: 0, y: 0})
-            .addScale(8000, 6)
+            .addMove(2000, {x: 0, y: -250})
+            .addMove(2000, {x: 1720, y: 0})
+            .addMove(2000, {x: 0, y: 800})
+            .addMove(2000, {x: -1720, y: 0})
+            .addMove(2000, {x: 0, y: -550})
             .play(block);
         });
 
@@ -127,8 +124,6 @@ function animaster() {
         move: function(element, duration, translation) {
             element.style.transitionDuration = `${duration}ms`;
             element.style.transform = getTransform(translation, null);
-
-
         },
 
         fadeIn: function(element, duration) {
@@ -231,36 +226,39 @@ function animaster() {
         addFadeOut: function(duration) {
             this._steps.push({
                 operation: 'fadeout',
-                duration: duration
+                duration: duration,
             });
             return this;
         },
 
         play: function(element) {
-            let animationDuration = '';
-            let animationTransform = '';
-            for (let elem of this._steps) {
-                let animationType = elem.operation;
-                animationDuration += `${elem.duration}ms `;
-                switch (animationType) {
-                    case 'translate':
-                        animationTransform += `${getTransform(elem.valueTransform, null)} `;
-                        break;
-                    case 'scale':
-                        animationTransform += `${getTransform(null, elem.valueTransform)} `;
-                        break;
-                    case 'fadein':
-                        element.classList.remove('hide');
-                        element.classList.add('show');
-                        break;
-                    case 'fadeout':
-                        element.classList.remove('show');
-                        element.classList.add('hide');
-                        break;
+            let i = 0;
+            let steps = this._steps;
+
+            function f() {
+                if (i < steps.length) {
+                    switch (steps[i].operation) {
+                        case 'translate':
+                            element.style.transform = `${getTransform(steps[i].valueTransform, null)} `;
+                            break;
+                        case 'scale':
+                            element.style.transform = `${getTransform(null, steps[i].valueTransform)} `;
+                            break;
+                        case 'fadein':
+                            element.classList.remove('hide');
+                            element.classList.add('show');
+                            break;
+                        case 'fadeout':
+                            element.classList.remove('show');
+                            element.classList.add('hide');
+                            break;
+                    }
+                    element.style.transitionDuration = `${steps[i].duration}ms `;
+                    setTimeout(f, steps[i].duration)
                 }
-                element.style.transform = animationTransform;
-                element.style.transitionDuration = animationDuration;
+                i++;
             }
+            f();
         },
 
         _steps: [],
