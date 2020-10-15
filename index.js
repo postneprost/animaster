@@ -1,14 +1,21 @@
 let timer;
 addListeners();
+const customAnimation = animaster()
+        .addMove(1000, {x: 1000, y: 0})
+        .addScale(800, 2.3)
+        .addMove(1000, {x: 500, y: -800})
+        .addFadeOut(2000)
+        .addScale(800, 1)
+        .addMove(1000, {x: 100, y: -400})
+        .addFadeIn(2000)
+        .addScale(800, 0.3)
+        .addMove(1000, {x: 0, y: 0})
+        .addScale(800, 1);
+
+
 
 function addListeners() {
     document.getElementById('fadeInPlay')
-        .addEventListener('click', function () {
-            const block = document.getElementById('fadeInBlock');
-            animaster().fadeIn(block, 10000);
-        });
-
-    document.getElementById('fadeInPlay2')
         .addEventListener('click', function () {
             const block = document.getElementById('fadeInBlock');
             animaster().addFadeIn(2000).play(block);
@@ -17,40 +24,16 @@ function addListeners() {
     document.getElementById('fadeOutPlay')
         .addEventListener('click', function () {
             const block = document.getElementById('fadeOutBlock');
-            animaster().fadeOut(block, 10000);
-        });
-
-    document.getElementById('fadeOutPlay2')
-        .addEventListener('click', function () {
-            const block = document.getElementById('fadeOutBlock');
-            animaster()
-            .addMove(2000, {x: 0, y: -250})
-            .addMove(2000, {x: 1720, y: 0})
-            .addMove(2000, {x: 0, y: 800})
-            .addMove(2000, {x: -1720, y: 0})
-            .addMove(2000, {x: 0, y: -550})
-            .play(block);
+            animaster().addFadeOut(1000).play(block);
         });
 
     document.getElementById('movePlay')
-        .addEventListener('click', function () {
-            const block = document.getElementById('moveBlock');
-            animaster().move(block, 1000, {x: 100, y: 10});
-        });
-
-    document.getElementById('movePlay2')
         .addEventListener('click', function () {
             const block = document.getElementById('moveBlock');
             animaster().addMove(2000, {x: 200, y: 50}).play(block);
         });
 
     document.getElementById('scalePlay')
-        .addEventListener('click', function () {
-            const block = document.getElementById('scaleBlock');
-            animaster().scale(block, 1000, 1.25);
-        });
-
-    document.getElementById('scalePlay2')
         .addEventListener('click', function () {
             const block = document.getElementById('scaleBlock');
             animaster().addScale(2000, 3).play(block);
@@ -84,6 +67,12 @@ function addListeners() {
         .addEventListener('click', function () {
             const block = document.getElementById('heartBeatingBlock');
             animaster().heartBeating(block, false).stop();
+        });
+
+    document.getElementById('customAnimationPlay')
+        .addEventListener('click', function () {
+            const block = document.getElementById('customAnimationBlock');
+            customAnimation.play(block);
         });
 }
 
@@ -234,15 +223,19 @@ function animaster() {
         play: function(element) {
             let i = 0;
             let steps = this._steps;
+            let translateAnimation = '';
+            let scaleAnimation = '';
 
             function f() {
+
                 if (i < steps.length) {
+
                     switch (steps[i].operation) {
                         case 'translate':
-                            element.style.transform = `${getTransform(steps[i].valueTransform, null)} `;
+                            translateAnimation = `${getTransform(steps[i].valueTransform, null)} `;
                             break;
                         case 'scale':
-                            element.style.transform = `${getTransform(null, steps[i].valueTransform)} `;
+                            scaleAnimation = `${getTransform(null, steps[i].valueTransform)} `;
                             break;
                         case 'fadein':
                             element.classList.remove('hide');
@@ -253,6 +246,7 @@ function animaster() {
                             element.classList.add('hide');
                             break;
                     }
+                    element.style.transform = `${translateAnimation} ${scaleAnimation}`;
                     element.style.transitionDuration = `${steps[i].duration}ms `;
                     setTimeout(f, steps[i].duration)
                 }
